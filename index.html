@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <br>
+    <br>
+    <button onClick="turn(ON)">ON</button>
+    <button onCLick="turn(OFF)">OFF</button>
+    <br>
+    <button onClick="preset(preset1)">PRESET 1</button>
+    <button onClick="preset(preset2)">PRESET 2</button>
+    <br>
+    <input type="range" min="0" max="255" value="0" id="brightnessLevel"><span id="brightnessLevelSpan">0</span>
+    <button onclick="test()">set</button>
+    <br>
+
+
+</body>
+<script src="node_modules/si9n-sdk/dist/si9n-sdk.min.js"></script>
+<script>
+    var ON = [85, 170, 0, 128, 254, 0, 1, 255, 255, 255, 1, 0, 0, 1, 0, 2, 1, 0, 0, 214, 89];
+    var OFF = [85, 170, 0, 128, 254, 0, 1, 255, 255, 255, 1, 0, 0, 1, 0, 2, 1, 0, 255, 213, 90];
+    var preset1 = [0x55, 0xAA, 0x00, 0x00, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x51, 0x13, 0x01, 0x00, 0x00, 0xBA, 0x56];
+    var preset2 = [0x55, 0xAA, 0x00, 0x00, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x51, 0x13, 0x01, 0x00, 0x01, 0xBB, 0x56];
+    var brightness = [0x55, 0xAA, 0x00, 0x00, 0xFE, 0xFF, 0x01, 0xFF, 0xFF, 0xFF, 0x01, 0x00, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0xAA, 0xFF, 0x5A];
+    document.getElementById("brightnessLevel").addEventListener("change", function () {
+        document.getElementById("brightnessLevelSpan").innerText = this.value;
+    });
+    function test() {
+        var currentBrightnessValue = document.getElementById("brightnessLevel").value;
+        brightness[brightness.length - 3] = parseInt(currentBrightnessValue);
+        if (currentBrightnessValue > 170) {
+            brightness[brightness.length - 2] = parseInt(currentBrightnessValue) + 85 - 256;
+            brightness[brightness.length - 1] = 0x5B;
+        } else {
+            brightness[brightness.length - 2] = parseInt(currentBrightnessValue) + 85;
+            brightness[brightness.length - 1] = 0x5A;
+        }
+        si9n.displayMessage({ raw: brightness });
+    }
+    function turn(state) {
+        console.log(state);
+        si9n.displayMessage({ raw: state });
+    }
+    function preset(presetN) {
+        console.log(presetN);
+        si9n.displayMessage({ raw: presetN });
+
+    }
+</script>
+
+</html>

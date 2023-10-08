@@ -1,0 +1,15 @@
+{
+  "name": "si9nt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "si9n-sdk": "https://player.si9n.io/npm/si9n-sdk-1.4.0.tgz"
+  }
+}
