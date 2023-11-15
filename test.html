@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Interface</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div id="container">
+        <div class="menu">
+            <ul>
+                <li data-target="brightnessSection" class="menu-item active">Brightness</li>
+                <li data-target="inputSection" class="menu-item">Input Settings</li>
+                <li data-target="screenSection" class="menu-item">Screen Settings</li>
+                <!-- Add additional menu items here -->
+            </ul>
+        </div>
+        <div class="settings">
+            <div id="brightnessSection" class="settings-section active">
+                <!-- Brightness settings content -->
+                <h2>Brightness</h2>
+                <div class="slider-container">
+                    <input type="range" min="0" max="255" value="125" class="slider" id="brightnessSlider">
+                    <span id="brightnessValue">125</span>
+                </div>
+            </div>
+            <div id="inputSection" class="settings-section">
+                <!-- Input settings content -->
+                <h2>Input Settings</h2>
+            </div>
+            <div id="screenSection" class="settings-section">
+                <!-- Screen settings content -->
+                <h2>Screen Settings</h2>
+            </div>
+            <!-- Add additional sections here -->
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
