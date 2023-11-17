@@ -1,4 +1,4 @@
-body,
+/* body,
 html {
     height: 100%;
     margin: 0;
@@ -65,7 +65,7 @@ html {
     appearance: none;
     width: 25px;
     height: 25px;
-    border-radius: 50%;
+    border-radius: 50%; 
     background: #ecf0f1;
     cursor: pointer;
 }
@@ -91,4 +91,123 @@ html {
 
 .settings-section.active {
     display: block;
+}
+
+h2 {
+    text-align: center;
+    margin: 100 auto;
+} */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #2a2d37;
+    margin: 0;
+    color: white;
+    height: 100vh;
+    /* Full height */
+}
+
+.container {
+    display: flex;
+    height: 100%;
+}
+
+.menu {
+    flex: 1;
+    /* Takes up 1/4 of the space */
+    background-color: #181a20;
+    border-right: 1px solid #40454f;
+    display: flex;
+    flex-direction: column;
+}
+
+.menu ul {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+    /* Full width of the .menu */
+    margin: 0;
+}
+
+.menu ul li {
+    padding: 15px 20px;
+    cursor: pointer;
+    border-bottom: 1px solid #40454f;
+    /* Add border to the bottom of each li */
+}
+
+.menu ul li:hover,
+.menu ul li.active {
+    background-color: #40454f;
+    color: #0078d7;
+}
+
+.menu ul li i {
+    margin-right: 8px;
+}
+
+.content {
+    flex: 3;
+    /* Takes up the remaining space */
+    padding: 20px;
+    background-color: #252830;
+    overflow-y: auto;
+    /* Add scroll for content overflow */
+}
+
+/* ...other styles remain the same... */
+.brightness-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    /* Adjust as needed */
+}
+
+/*
+.brightness-range {
+    flex-grow: 1;
+    flex-basis: 75%;
+}
+*/
+
+#brightnessLevelSpan {
+    white-space: nowrap;
+}
+
+#setBrightness {
+    padding: 5px 10px;
+    cursor: pointer;
+    border: none;
+    background-color: #0078d7;
+    color: white;
+    border-radius: 4px;
+}
+
+input[type="range"] {
+    width: 60%;
+}
+
+select {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: #0078d7;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+
+}
+
+#resolutionPicker,
+#presetPicker {
+    width: 25%;
 }
