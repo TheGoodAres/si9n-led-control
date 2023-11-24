@@ -1,4 +1,5 @@
-/*import si9n from "node_modules/si9n-sdk/dist/si9n-sdk.min.js"; */
+
+
 class Controller {
     init(model) {
         this.model = Controller.model;
@@ -8,7 +9,7 @@ class Controller {
         if (isNumber(brightnessLevel)) {
             let brightness = [0x55, 0xAA, 0x00, 0x00, 0xFE, 0xFF, 0x01, 0xFF, 0xFF, 0xFF, 0x01, 0x00, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0xAA, 0xFF, 0x5A];
             brightness[brightness.length - 3] = brightnessLevel;
-            if (currentBrightnessValue > 170) {
+            if (brightnessLevel > 170) {
                 brightness[brightness.length - 2] = brightnessLevel + 85 - 256;
                 brightness[brightness.length - 1] = 0x5B;
             } else {
@@ -16,25 +17,34 @@ class Controller {
                 brightness[brightness.length - 1] = 0x5A;
             }
             si9n.displayMessage({ raw: brightness });
+            si9n.on('message', function () {
+
+            });
         };
     };
 
 }
+
 
 function getControllerByName(controllerName) {
     for (let key in Controller) {
         if (Controller.hasOwnProperty(key)) {
             const controller = Controller[key];
             if (controller.name === controllerName) {
+                console.log(controller);
                 return controller;
             }
         }
     }
     return null; // or any appropriate default value or error handling
 }
-const getAllControllerModels = () => {
-    return Object.values(Controller).filter(value => typeof value === 'object');
-};
+const Resolutions = {
+    R1920x1080: [],
+    R1280x720: [],
+
+}
+const saveCommand = '55 AA 00 15 FE 00 01 FF FF FF 01 00 11 00 00 01 01 00 11 8B 59';
+
 const Patterns = {
     Red: [0x55, 0xAA, 0x00, 0x80, 0xFE, 0x00, 0x01, 0x00, 0xFF, 0xFF, 0x01, 0x00, 0x01, 0x01, 0x00, 0x02, 0x01, 0x00, 0x02, 0xDA, 0x58],
     Green: [0x55, 0xAA, 0x00, 0x80, 0xFE, 0x00, 0x01, 0x00, 0xFF, 0xFF, 0x01, 0x00, 0x01, 0x01, 0x00, 0x02, 0x01, 0x00, 0x03, 0xDB, 0x58],
@@ -180,6 +190,12 @@ const WorkingMode_J6 = {
     SplicerMode: [0x55, 0xAA, 0x00, 0x00, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x2C, 0x00, 0x00, 0x13, 0x01, 0x00, 0x00, 0x94, 0x56],
     SwitcherMode: [0x55, 0xAA, 0x00, 0x00, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x2C, 0x00, 0x00, 0x13, 0x01, 0x00, 0x01, 0x95, 0x56]
 }
+const mappingCommands = {
+    ON: [0x55, 0xAA, 0x00, 0x6B, 0xFE, 0xFF, 0x01, 0xFF, 0xFF, 0xFF, 0x01, 0x00, 0x88, 0x00, 0x00, 0x01, 0x01, 0x00, 0x05, 0x4B, 0x5B],
+    OFF: [0x55, 0xAA, 0x00, 0x6A, 0xFE, 0xFF, 0x01, 0xFF, 0xFF, 0xFF, 0x01, 0x00, 0x88, 0x00, 0x00, 0x01, 0x01, 0x00, 0x01, 0x46, 0x5B]
+    //ON NEW COMMAND: 0x55,0xaa,0x00,0x61,0xfe,0xff,0x01,0xff,0xff,0xff,0x01,0x00,0x88,0x00,0x00,0x01,0x01,0x00,0x05,0x41,0x5b
+    //OFF new command: 0x55,0xaa,0x00,0x40,0xfe,0xff,0x01,0xff,0xff,0xff,0x01,0x00,0x88,0x00,0x00,0x01,0x01,0x00,0x01,0x1c,0x5b
+}
 
 Controller.VX4s = {
     name: "VX4s",
@@ -187,9 +203,9 @@ Controller.VX4s = {
     inputs: Inputs_VX4s,
     displayMode: DisplayModes,
     presets: 10,
-    hasLayers: false,
+    layers: 0,
     PiP: PipOnOff,
-    WorkingMOde: 0
+    workingMode: 0
 };
 Controller.VX6s = {
     name: "VX6s",
@@ -197,69 +213,112 @@ Controller.VX6s = {
     inputs: Inputs_VX6s,
     displayMode: DisplayModes_VX6s,
     presets: 16,
-    hasLayers: false,
+    layers: 0,
     PiP: 0,
     WorkingMode: WorkingMode_VX6s
 };
 Controller.NovaProHD = {
     name: "NovaProHD",
-    presets: 0,
-    hasLayers: false,
     hasBrightness: true,
-    displayMode: DisplayModes,
     inputs: Inputs_NovaProHD,
-    WorkingMOde: 0
+    displayMode: DisplayModes,
+    presets: 0,
+    layers: 0,
+    PiP: 0,
+    workingMode: 0
 };
 Controller.NovaProUHDJr = {
     name: "NovaProUHDJr",
-    presets: 10,
-    hasLayers: false,
     hasBrightness: true,
-    displayMode: DisplayModes_VX1000,
     inputs: Inputs_NovaProUHDJr,
-    WorkingMOde: 0
+    displayMode: DisplayModes_VX1000,
+    presets: 10,
+    layers: false,
+    PiP: 0,
+    workingMode: 0
 };
+Controller.VX16s = {
+    name: "VX16S",
+    hasBrightness: true,
+    inputs: 0,
+    displayMode: DisplayModes_VX1000,
+    presets: 10,
+    layers: 0,
+    PiP: 0,
+    workingMode: 0
+}
 Controller.MCTRL4K = {
     name: "MCTRL4K",
-    presets: 0,
-    hasLayers: false,
     hasBrightness: true,
-    displayMode: DisplayModes,
     inputs: Inputs_MCTRL4K,
-    WorkingMOde: 0
+    displayMode: DisplayModes,
+    presets: 0,
+    layers: 0,
+    PiP: 0,
+    workingMode: 0
 }
 Controller.VX1000 = {
     name: "VX1000",
-    presets: 10,
-    hasLayers: true,
     hasBrightness: true,
+    inputs: Inputs_VX1000,
+    presets: 10,
     displayMode: DisplayModes_VX1000,
     layers: Layers_VX1000,
-    inputs: Inputs_VX1000,
-    WorkingMOde: 0
+    PiP: 0,
+    workingMode: 0
 };
 Controller.VX600 = {
     name: "VX600",
-    presets: 10,
-    hasLayers: true,
     hasBrightness: true,
-    displayMode: DisplayModes_VX1000,
-    layers: Layers_VX1000,
     inputs: Inputs_VX600,
-    WorkingMOde: 0
+    presets: 10,
+    layers: Layers_VX1000,
+    displayMode: DisplayModes_VX1000,
+    PiP: 0,
+    workingMode: 0
 }
 
 Controller.J6 = {
     name: "J6",
-    presets: 32,
-    hasLayers: false,
     hasBrightness: false,
+    inputs: 0,
+    presets: 32,
+    layers: 0,
     displayMode: DisplayModes_VX1000,
-    WorkingMOde: WorkingMode_J6
+    PiP: 0,
+    workingMode: WorkingMode_J6
+};
+Controller.MCTRL300 = {
+    name: "MCTRL300",
+    hasBrightness: false,
+    inputs: 0,
+    presets: 32,
+    layers: 0,
+    displayMode: DisplayModes_VX1000,
+    PiP: 0,
+    workingMode: WorkingMode_J6
+}
+
+Controller.MCTRL300PRO = {
+    name: "JMCTRL300PRO",
+    hasBrightness: false,
+    inputs: 0,
+    presets: 32,
+    layers: 0,
+    displayMode: DisplayModes_VX1000,
+    PiP: 0,
+    workingMode: WorkingMode_J6
+}
+/* Create default initial page for VX4S */
+var currentController = Controller.VX4s;
+var currentId = "brightnessMenu";
+loadControllerContent();
+
+const getAllControllerModels = () => {
+    return Object.values(Controller).filter(value => typeof value === 'object');
 };
 
 const modelPicker = document.getElementById('modelPicker');
-const uiContainer = document.getElementById('uiContainer');
 
 getAllControllerModels().forEach(controller => {
     const option = document.createElement('option');
@@ -268,129 +327,142 @@ getAllControllerModels().forEach(controller => {
     modelPicker.appendChild(option);
 });
 
-modelPicker.addEventListener('change', () => {
-    const selectedController = getAllControllerModels().find(controller => controller.name === modelPicker.value);
-    if (selectedController) {
-        createUIForModel(selectedController);
-    }
-});
+// Function to update the content area
+function updateContent(content) {
+    document.querySelector('.content').innerHTML = content;
+}
 
-function createUIForModel(model) {
-    const brightnessH = '<br><input type="range" min="0" max="255" value="0" id="brightnessLevel"><span id="brightnessLevelSpan">0</span><button id="setBrightness">Set Brightness</button>';
-    const patternH = '<div id="layers">Layers: </div>';
-    const presetH = '<br> <div>Presets: <select id="presetPicker"></select></div>';
+// Function to load controller-specific content
+function loadControllerContent() {
+    // Build and update the content based on currentControllerConfig
+    // Build your content here
+    console.log(currentId);
+    var content = "";
+    const brightnessH = '<br><h2>Brightness</h2><br><input type="range" min="0" max="255" value="0" id="brightnessLevel"><span id="brightnessLevelSpan">0</span><button id="setBrightness">Set Brightness</button><button id="saveBrightness">Save Brightness</button>';
+    const noBrightnessH = '<br><h2>This controller cannot control brightness</h2>';
+    const patternH = '<div id="patterns">Patterns: </div>';
+    const presetH = '<br> <div>Presets: <select id="presetPicker"></select><button id="presetSet">Set Preset</button></div>';
     const inputsH = '<br><div id="inputs">Inputs:</div>';
-    const PiPH = '<br> <div id="PiP">PiP:</div'
-    var innerHTML = '<br><div id=patternButtons>Patterns:</div> <br><div id="displayModes">Display Modes:</div>';
-    uiContainer.innerHTML = '';
-    const currentController = getControllerByName(model);
-    if (currentController.hasBrightness) {
-        innerHTML += brightnessH;
+    const noInputsH = '<br><h2>This controller cannot control inputs</h2>';
+    const PiPH = '<br> <div id="PiP">PiP:</div>';
+    const displayModeH = '<br> <div id="displaymode">Display Modes: </div>';
+    const resolutionH = '<br> <div> Resolution: <select id="resolutionPicker"></select></div>';
+    const layersH = '<br><div id="layers">Layers: </div>';
+    const workingModeH = '<br> <div id="workingMode">Working Mode:</div>';
+    const mappingH = '<br> <div id = "mapping">Mapping: </div>';
+    if (currentId === "brightnessMenu") {
+        if (currentController.hasBrightness) {
+            content += brightnessH;
+        } else {
+            content += noBrightnessH;
+        }
     }
-    if (currentController.hasLayers) {
-        innerHTML += patternH;
+    if (currentId === "inputMenu") {
+        if (currentController.inputs != 0) {
+            content += inputsH;
+        } else {
+            content += noInputsH;
+        }
+        content += resolutionH;
     }
-    if (currentController.presets > 0) {
-        innerHTML += presetH;
-    }
-    if (currentController.inputs != 0) {
-        innerHTML += inputsH
-    }
-    if (currentController.PiP != 0) {
-        innerHTML += PiPH
-    }
-
-    uiContainer.innerHTML = innerHTML;
-    if (currentController.hasBrightness) {
-        document.getElementById("brightnessLevel").addEventListener("change", function () {
-            document.getElementById("brightnessLevelSpan").innerText = this.value
-
-        });
-    }
-    if (currentController.PiP != 0) {
-        createButtons('PiP', PipOnOff);
-    }
-    createButtons('displayModes', currentController.displayMode);
-    createButtons('patternButtons', Patterns);
-    if (currentController.hasLayers) {
-        createButtons('layers', currentController.layers);
-    }
-    if (currentController.presets > 0) {
-        createPresetsPicker(currentController.presets);
-        document.getElementById("presetPicker").addEventListener("change", function () {
-            const presetDropdown = document.getElementById("presetPicker");
-            var presetNumber = presetDropdown.options[presetDropdown.selectedIndex].text.split(' ')[1];
-            setPreset(presetNumber);
-        });
-    }
-    if (currentController.inputs != 0) {
-        createButtons('inputs', currentController.inputs);
+    if (currentId === "screenMenu") {
+        content += patternH;
+        content += displayModeH;
+        console.log(content);
     }
 
-};
+    if (currentId === "advancedMenu") {
+        if (currentController.PiP != 0) {
+            content += PiPH;
+        }
+        if (currentController.presets > 0) {
+            content += presetH;
+        }
+        if (currentController.layers != 0) {
+            content += layersH;
+        }
+        if (currentController.workingMode != 0) {
+            content += workingModeH;
+        }
+    }
+    if (currentId === "prestoreMenu") {
+        content += mappingH;
+    }
 
+    updateContent(content);
+
+    if (currentId === "brightnessMenu") {
+        addBrightnessEventListener();
+    }
+    if (currentId === "inputMenu") {
+        createButtons("inputs", currentController.inputs);
+    }
+    if (currentId === "screenMenu") {
+        createButtons("patterns", Patterns);
+        createButtons("displaymode", currentController.displayMode);
+    }
+    if (currentId === "advancedMenu") {
+        if (currentController.PiP != 0) {
+            createButtons("PiP", currentController.PiP);
+        }
+        if (currentController.presets > 0) {
+            createPresetsPicker(currentController.presets);
+            PresetEventListener();
+        }
+        if (currentController.layers != 0) {
+            createButtons("layers", currentController.layers);
+        }
+        if (currentController.workingMode != 0) {
+            createButtons("workingMode", currentController.workingMode);
+        }
+    }
+    if (currentId == "prestoreMenu") {
+        createButtons("mapping", mappingCommands);
+    }
+}
+
+
+
+
+// Select all <li> elements inside the <div> with class "menu"
+const menuItems = document.querySelectorAll('.menu ul li');
 modelPicker.addEventListener('change', () => {
-    createUIForModel(modelPicker.value);
+    currentController = getControllerByName(modelPicker.value);
+    loadControllerContent();
 });
 
-// Initialize UI with the first model selected
-createUIForModel(modelPicker.value);
+menuItems.forEach(item => {
+    if (item.id == "controllerMenu" || item.id == "saveMenuButton") {
 
-/*
-    function createDisplayModes_VX1000() {
-        const displayModeContainer = document.getElementById('displayMode');
-        Object.keys(DisplayModes_VX1000).forEach(displayMode => {
-            const button = document.createElement('button');
-            button.textContent = displayMode;
-            button.addEventListener('click', () => {
-                si9n.displayMessage({ raw: DisplayModes_VX1000[displayMode] });
-            });
-            displayModeContainer.appendChild(button);
+    } else {
+        item.addEventListener('click', () => {
+            currentId = item.id;
+            loadControllerContent();
         });
     }
-*/
-/*
-    function createPatternButtons() {
-        const patternButtonsContainer = document.getElementById('patternButtons');
-        // create patterns
-        Object.keys(Patterns).forEach(patternName => {
-            const button = document.createElement('button');
-            button.textContent = patternName;
-            button.addEventListener('click', () => {
-                si9n.displayMessage({ raw: Patterns[patternName] });
-            });
-            patternButtonsContainer.appendChild(button);
-        });
-    }
-*/
-/*
-    function createLayers() {
-        const layersButtonsContainer = document.getElementById('layers');
-        Object.keys(Layers_VX1000).forEach(layerName => {
-            const button = document.createElement('button');
-            button.textContent = layerName;
-            button.addEventListener('click', () => {
-                si9n.displayMessage({ raw: Layers_VX1000[layerName] });
-            });
-            layersButtonsContainer.appendChild(button);
-        });
- 
-    }
-    function createInputs() {
- 
-        const inputsButtonsContainer = document.getElementById('inputs');
-        Object.keys(Inputs_VX1000).forEach(inputName => {
-            const button = document.createElement('button');
-            button.textContent = inputName;
-            button.addEventListener('click', () => {
-                si9n.displayMessage({ raw: Inputs_VX1000[inputName] });
-            });
-            inputsButtonsContainer.appendChild(button);
-        });
-    }
-    */
+});
+document.getElementById("saveMenuButton").addEventListener('click', function () {
+    si9n.displayMessage({ raw: saveCommand });
+});
+function addBrightnessEventListener() {
+    document.getElementById("brightnessLevel").addEventListener("change", function () {
+        document.getElementById("brightnessLevelSpan").innerText = this.value
+
+    });
+    document.getElementById('setBrightness').addEventListener('click', function () {
+        var brightness = parseInt(document.getElementById('brightnessLevel').value);
+        Controller.changeBrightness(brightness);
+    });
+
+    document.getElementById('saveBrightness').addEventListener('click', function () {
+        si9n.displayMessage({ raw: saveCommand });
+    });
+}
+function isNumber(number) {
+    return typeof (number) === 'number';
+}
+
 function createButtons(elementId, commands) {
-    console.log(commands);
     const container = document.getElementById(elementId);
     Object.keys(commands).forEach(command => {
         const button = document.createElement('button');
@@ -402,6 +474,7 @@ function createButtons(elementId, commands) {
         container.appendChild(button);
     });
 }
+
 function createPresetsPicker(presets) {
     if (isNumber(presets) && presets > 1) {
         const container = document.getElementById('presetPicker');
@@ -411,13 +484,69 @@ function createPresetsPicker(presets) {
             container.appendChild(option);
         }
     };
+}
+function PresetEventListener() {
+    var presetButton = document.getElementById("presetSet");
+    presetButton.addEventListener('click', () => {
+        const presetDropdown = document.getElementById("presetPicker");
+        var preset = parseInt(presetDropdown.options[presetDropdown.selectedIndex].text.split(' ')[1]);
+        switch (currentController) {
+            case Controller.VX6s:
 
+                console.log("VX6s");
+                preset_VX6s(preset);
+                break;
+            case Controller.VX4s:
+
+                console.log("VX4s");
+                preset_VX4s(preset);
+                break;
+            case Controller.VX1000:
+            case Controller.VX600:
+            case Controller.VX16s:
+
+                console.log("VX1000");
+                preset_VX1000(preset);
+                break;
+            case Controller.novaProUHDJr:
+
+                console.log("NovaProUHDJr");
+                preset_NovaProUHDJr(preset);
+                break;
+            case Controller.J6:
+
+                console.log("J6");
+                preset_J6(preset);
+                break;
+            default:
+                console.log("Controller model not found!");
+                break;
+        }
+    });
+}
+
+
+function preset_VX4s(preset) {
+    if (isNumber(preset)) {
+        var presetHex = [0x55, 0xAA, 0x00, 0x2E, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x70, 0x00, 0x20, 0x02, 0x01, 0x00, 0x00, 0x15, 0x57]//21;
+        if (preset > 0 && preset <= 10) {
+            presetHex[18] = preset - 1;
+
+            if (preset < 6) {
+                presetHex[3] = 0x2E;
+                presetHex[19] = 20 + preset
+            } else {
+                presetHex[3] = 0x95
+                presetHex[19] = 176 + preset;
+            }
+
+            si9n.displayMessage({ raw: presetHex });
+        }
+    }
 }
 
 function preset_VX1000(preset) {
-    const max = 10;
-    const min = 0;
-    console.log(typeof (preset));
+
     if (isNumber(preset)) {
         console.log(1);
         var presetHex = [0x55, 0xAA, 0x00, 0x00, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x51, 0x13, 0x01, 0x00, 0x00, 0xBA, 0x56]//21;
@@ -429,40 +558,48 @@ function preset_VX1000(preset) {
         }
     }
 }
-function preset_VX4s(preset) {
-    if (isNumber(preset)) {
-        var presetHex = [0x55, 0xAA, 0x00, 0x2E, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x70, 0x00, 0x20, 0x02, 0x01, 0x00, 0x00, 0x15, 0x57]//21;
-        if (preset > 0 && preset <= 10) {
-            presetHex[18] = preset;
 
-            if (preset < 6) {
-                presetHex[3] = 0x2E;
-                presetHex[19] = 20 + preset
-            } else {
-                presetHex[3] = 0x95;
-                presetHex[19] = 176 + preset;
-            }
 
-            si9n.displayMessage({ raw: presetHex });
-        }
-    }
-}
-function isNumber(number) {
-    return typeof (number) === 'number';
-}
-function setPreset(preset) {
-    var controller = getControllerByName(modelPicker.value);
-    switch (controller.name) {
-        case "VX1000":
-            preset_VX1000(preset);
-            break;
-        case "VX4s":
-            preset_VX4s(preset);
-            break;
-        default:
-            console.log("Could not find preset");
-            break;
+function preset_VX6s(preset) {
+    var presetHex = [0x55, 0xAA, 0x00, 0x00, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x51, 0x13, 0x01, 0x00, 0x00, 0x05, 0x16]//21;
 
+    presetHex[18] = preset - 1;
+    if (preset < 12) {
+        presetHex[19] = 5 + preset - 1;
+    } else {
+        presetHex[19] = 186 + preset;
     }
 
+    if (preset > 6) {
+        presetHex[20] = 0x56;
+    }
+    si9n.displayMessage({ raw: presetHex });
+}
+
+function preset_NovaProUHDJr(preset) {
+    const presets = [
+        [0x55, 0xAA, 0x00, 0x35, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x51, 0x13, 0x01, 0x00, 0x00, 0xEF, 0x56],
+        [0x55, 0xAA, 0x00, 0x2F, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x51, 0x13, 0x01, 0x00, 0x01, 0xEA, 0x56],
+        [0x55, 0xAA, 0x00, 0x30, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x51, 0x13, 0x01, 0x00, 0x02, 0xEC, 0x56],
+        [0x55, 0xAA, 0x00, 0x2E, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x51, 0x13, 0x01, 0x00, 0x03, 0xEB, 0x56],
+        [0x55, 0xAA, 0x00, 0x48, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x51, 0x13, 0x01, 0x00, 0x04, 0x06, 0x57],
+        [0x55, 0xAA, 0x00, 0x4D, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x51, 0x13, 0x01, 0x00, 0x05, 0x0C, 0x57],
+        [0x55, 0xAA, 0x00, 0x49, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x51, 0x13, 0x01, 0x00, 0x06, 0x09, 0x57],
+        [0x55, 0xAA, 0x00, 0x46, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x51, 0x13, 0x01, 0x00, 0x07, 0x07, 0x57],
+        [0x55, 0xAA, 0x00, 0x4D, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x51, 0x13, 0x01, 0x00, 0x08, 0x0F, 0x57],
+        [0x55, 0xAA, 0x00, 0x4C, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x51, 0x13, 0x01, 0x00, 0x09, 0x0F, 0x57]
+    ];
+    si9n.displayMessage({ raw: presets[preset - 1] });
+}
+
+function preset_J6(preset) {
+    var presetHex = [0x55, 0xAA, 0x00, 0x00, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x51, 0x13, 0x01, 0x00, 0x00, 0xBA, 0x56];
+    presetHex[18] = preset - 1;
+    if (preset > 8) {
+        presetHex[19] = 0xC3;
+    } else {
+        preset[19] = 185 + preset;
+    }
+    console.log(presetHex);
+    si9n.displayMessage({ raw: presetHex });
 }
