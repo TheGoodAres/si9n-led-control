@@ -347,7 +347,7 @@ function loadControllerContent() {
     const noInputsH = '<br><h2>This controller cannot control inputs</h2>';
     const PiPH = '<br> <div id="PiP">PiP:</div>';
     const displayModeH = '<br> <div id="displaymode">Display Modes: </div>';
-    const resolutionH = '<br> <div> Resolution: <select id="resolutionPicker"></select></div>';
+    const resolutionH = '<br> <div id="resolutions"> Resolution: </div>';
     const layersH = '<br><div id="layers">Layers: </div>';
     const workingModeH = '<br> <div id="workingMode">Working Mode:</div>';
     const mappingH = '<br> <div id = "mapping">Mapping: </div>';
@@ -401,6 +401,7 @@ function loadControllerContent() {
     }
     if (currentId === "inputMenu") {
         createButtons("inputs", currentController.inputs);
+        createButtons("resolutions", Resolutions);
     }
     if (currentId === "screenMenu") {
         createButtons("patterns", Patterns);
@@ -664,6 +665,6 @@ const sendCommand = (command,) => {
     if (commandId == 254) {
         commandId = 0
     }
-    command[]
+    //command[]
     console.log()
 }
