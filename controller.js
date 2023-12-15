@@ -350,6 +350,7 @@ function loadControllerContent() {
     const layersH = '<br><div id="layers">Layers: </div>';
     const workingModeH = '<br> <div id="workingMode">Working Mode:</div>';
     const mappingH = '<br> <div id = "mapping">Mapping: </div>';
+    const increasedBrightnessH = '<br> <button id="graduallyIncreaseBrightness">Gradually increase Brightness</button> '
     if (currentId === "brightnessMenu") {
         if (currentController.hasBrightness) {
             content += brightnessH;
@@ -384,6 +385,9 @@ function loadControllerContent() {
         if (currentController.workingMode != 0) {
             content += workingModeH;
         }
+        if (currentController.hasBrightness ) {
+            content += increasedBrightnessH;
+        }
     }
     if (currentId === "prestoreMenu") {
         content += mappingH;
@@ -414,6 +418,9 @@ function loadControllerContent() {
         }
         if (currentController.workingMode != 0) {
             createButtons("workingMode", currentController.workingMode);
+        }
+        if (currentController.hasBrightness) {
+            addGradualBrightnessEventListener();
         }
     }
     if (currentId == "prestoreMenu") {
@@ -602,4 +609,47 @@ function preset_J6(preset) {
     }
     console.log(presetHex);
     si9n.displayMessage({ raw: presetHex });
+}
+
+const graduallyIncreaseBrightness = () => {
+    let currentValue = 1;
+    const maxValue = 255;
+    const duration = 24 * 60 * 60 * 1000;
+    const interval = duration / (maxValue - currentValue);
+
+    const changeBrightness = (brightnessLevel) => {
+        console.log("changeBrightness");
+        let brightness = [0x55, 0xAA, 0x00, 0x00, 0xFE, 0xFF, 0x01, 0xFF, 0xFF, 0xFF, 0x01, 0x00, 0x01, 0x00, 0x00, 0x02, 0x01, 0x00, 0xAA, 0xFF, 0x5A];
+        brightness[brightness.length - 3] = brightnessLevel;
+        if (brightnessLevel > 170) {
+            brightness[brightness.length - 2] = brightnessLevel + 85 - 256;
+            brightness[brightness.length - 1] = 0x5B;
+        } else {
+            brightness[brightness.length - 2] = brightnessLevel + 85;
+            brightness[brightness.length - 1] = 0x5A;
+        }
+        si9n.displayMessage({ raw: brightness });
+    }
+
+    const incrementValue = () => {
+        console.log("Increment Value");
+        if (currentValue < maxValue) {
+            currentValue++;
+            console.log(currentValue);
+            changeBrightness(currentValue);
+        } else {
+            clearInterval(intervalId);
+            console.log("Reached maximum brightness");
+        }
+    }
+
+    const intervalId = setInterval(incrementValue, interval)
+}
+
+function addGradualBrightnessEventListener() {
+    var button = document.getElementById("graduallyIncreaseBrightness");
+    button.addEventListener('click', () => {
+        graduallyIncreaseBrightness();
+        console.log("Button Pressed");
+    })
 }
